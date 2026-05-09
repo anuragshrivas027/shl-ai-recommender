@@ -57,7 +57,6 @@ def startup_event():
 
     global groq_client
     global collection
-    global model
 
     print("Loading Groq client...")
 
@@ -73,12 +72,6 @@ def startup_event():
 
     collection = client.get_collection(
         name="shl_assessments"
-    )
-
-    print("Loading embedding model...")
-
-    model = SentenceTransformer(
-        "all-MiniLM-L6-v2"
     )
 
     print("Startup completed.")
@@ -271,6 +264,19 @@ def infer_test_type(name, description):
 
 
 def retrieve_assessments(query, top_k=5):
+
+    global model
+
+    # Lazy load embedding model
+    if model is None:
+
+        print("Loading embedding model...")
+
+        model = SentenceTransformer(
+            "all-MiniLM-L6-v2"
+        )
+
+        print("Embedding model loaded.")
 
     embedding = model.encode(query).tolist()
 
