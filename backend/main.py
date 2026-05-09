@@ -12,6 +12,7 @@ from sentence_transformers import SentenceTransformer
 
 import os
 import json
+import threading
 
 
 # ---------------------------------------------------
@@ -78,6 +79,27 @@ def startup_event():
 
 
 # ---------------------------------------------------
+# BACKGROUND MODEL PRELOAD
+# ---------------------------------------------------
+
+def preload_model():
+
+    try:
+
+        load_model()
+
+    except Exception as error:
+
+        print("MODEL PRELOAD ERROR:", error)
+
+
+threading.Thread(
+    target=preload_model,
+    daemon=True
+).start()
+
+
+# ---------------------------------------------------
 # REQUEST SCHEMA
 # ---------------------------------------------------
 
@@ -127,7 +149,8 @@ def load_model():
         print("Loading embedding model...")
 
         model = SentenceTransformer(
-            "all-MiniLM-L6-v2"
+            "all-MiniLM-L6-v2",
+            device="cpu"
         )
 
         print("Embedding model loaded.")
@@ -288,7 +311,10 @@ def retrieve_assessments(query, top_k=5):
 
     scored = []
 
-    for item in catalog_data:
+    # LIMIT PROCESSING FOR RENDER
+    limited_catalog = catalog_data[:25]
+
+    for item in limited_catalog:
 
         combined_text = (
             item["name"] + " " +
@@ -314,7 +340,14 @@ def retrieve_assessments(query, top_k=5):
 
     recommendations = []
 
+    added = set()
+
     for _, item in scored[:top_k]:
+
+        if item["name"] in added:
+            continue
+
+        added.add(item["name"])
 
         recommendations.append({
             "name": item["name"],
