@@ -157,6 +157,26 @@ def load_model():
 
     return model
 
+# ---------------------------------------------------
+# BACKGROUND MODEL PRELOAD
+# ---------------------------------------------------
+
+def preload_model():
+
+    try:
+
+        load_model()
+
+    except Exception as error:
+
+        print("MODEL PRELOAD ERROR:", error)
+
+
+threading.Thread(
+    target=preload_model,
+    daemon=True
+).start()
+
 
 def build_conversation_text(messages):
 
