@@ -79,27 +79,6 @@ def startup_event():
 
 
 # ---------------------------------------------------
-# BACKGROUND MODEL PRELOAD
-# ---------------------------------------------------
-
-def preload_model():
-
-    try:
-
-        load_model()
-
-    except Exception as error:
-
-        print("MODEL PRELOAD ERROR:", error)
-
-
-threading.Thread(
-    target=preload_model,
-    daemon=True
-).start()
-
-
-# ---------------------------------------------------
 # REQUEST SCHEMA
 # ---------------------------------------------------
 
@@ -156,6 +135,27 @@ def load_model():
         print("Embedding model loaded.")
 
     return model
+
+
+# ---------------------------------------------------
+# BACKGROUND MODEL PRELOAD
+# ---------------------------------------------------
+
+def preload_model():
+
+    try:
+
+        load_model()
+
+    except Exception as error:
+
+        print("MODEL PRELOAD ERROR:", error)
+
+
+threading.Thread(
+    target=preload_model,
+    daemon=True
+).start()
 
 
 def build_conversation_text(messages):
@@ -311,7 +311,6 @@ def retrieve_assessments(query, top_k=5):
 
     scored = []
 
-    # LIMIT PROCESSING FOR RENDER
     limited_catalog = catalog_data[:25]
 
     for item in limited_catalog:
@@ -407,10 +406,7 @@ def should_recommend(messages):
         combined.split()
     )
 
-    if word_count >= 6:
-        return True
-
-    return False
+    return word_count >= 6
 
 
 def should_end_conversation(
@@ -487,7 +483,6 @@ def chat(request: ChatRequest):
         messages
     )
 
-    # OFF TOPIC
     if is_off_topic(latest_message):
 
         return {
@@ -499,7 +494,6 @@ def chat(request: ChatRequest):
             "end_of_conversation": False
         }
 
-    # PROMPT INJECTION
     if is_prompt_injection(latest_message):
 
         return {
@@ -511,14 +505,12 @@ def chat(request: ChatRequest):
             "end_of_conversation": False
         }
 
-    # COMPARISON
     if is_comparison_query(latest_message):
 
         return generate_comparison(
             latest_message
         )
 
-    # CLARIFICATION
     if is_vague_query(latest_message):
 
         return {
@@ -530,7 +522,6 @@ def chat(request: ChatRequest):
             "end_of_conversation": False
         }
 
-    # RETRIEVAL
     recommendations = []
 
     if should_recommend(messages):
@@ -540,7 +531,6 @@ def chat(request: ChatRequest):
             top_k=5
         )
 
-    # LLM RESPONSE
     try:
 
         reply = ask_llm(
