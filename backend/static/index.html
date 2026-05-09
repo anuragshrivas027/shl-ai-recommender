@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHL AI Recommender</title>
+
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+    <div class="background-glow"></div>
+
+    <div class="chat-container">
+
+        <div class="header">
+            <h1>SHL AI Assessment Recommender</h1>
+            <p>Conversational Hiring Assistant</p>
+        </div>
+
+        <div id="chat-box" class="chat-box"></div>
+
+        <div class="input-area">
+
+            <input
+                type="text"
+                id="user-input"
+                placeholder="Describe the role you are hiring for..."
+            >
+
+            <button onclick="sendMessage()">
+                Send
+            </button>
+
+        </div>
+
+    </div>
+
+    <script src="/static/script.js"></script>
+
+</body>
+
+</html>
