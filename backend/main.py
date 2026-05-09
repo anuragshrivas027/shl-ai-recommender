@@ -8,10 +8,10 @@ from dotenv import load_dotenv
 
 from groq import Groq
 
-import chromadb
-import os
-
 from sentence_transformers import SentenceTransformer
+
+import os
+import json
 
 
 # ---------------------------------------------------
@@ -44,8 +44,8 @@ app.mount(
 # ---------------------------------------------------
 
 groq_client = None
-collection = None
 model = None
+catalog_data = []
 
 
 # ---------------------------------------------------
@@ -56,7 +56,7 @@ model = None
 def startup_event():
 
     global groq_client
-    global collection
+    global catalog_data
 
     print("Loading Groq client...")
 
@@ -64,15 +64,15 @@ def startup_event():
         api_key=os.getenv("GROQ_API_KEY")
     )
 
-    print("Loading ChromaDB...")
+    print("Loading catalog data...")
 
-    client = chromadb.PersistentClient(
-        path="data/chroma_db"
-    )
+    with open(
+        "data/catalog.json",
+        "r",
+        encoding="utf-8"
+    ) as file:
 
-    collection = client.get_collection(
-        name="shl_assessments"
-    )
+        catalog_data = json.load(file)
 
     print("Startup completed.")
 
@@ -117,6 +117,23 @@ def health():
 # ---------------------------------------------------
 # HELPERS
 # ---------------------------------------------------
+
+def load_model():
+
+    global model
+
+    if model is None:
+
+        print("Loading embedding model...")
+
+        model = SentenceTransformer(
+            "all-MiniLM-L6-v2"
+        )
+
+        print("Embedding model loaded.")
+
+    return model
+
 
 def build_conversation_text(messages):
 
@@ -265,52 +282,47 @@ def infer_test_type(name, description):
 
 def retrieve_assessments(query, top_k=5):
 
-    global model
+    model = load_model()
 
-    # Lazy load embedding model
-    if model is None:
+    query_embedding = model.encode(query)
 
-        print("Loading embedding model...")
+    scored = []
 
-        model = SentenceTransformer(
-            "all-MiniLM-L6-v2"
+    for item in catalog_data:
+
+        combined_text = (
+            item["name"] + " " +
+            item.get("description", "")
         )
 
-        print("Embedding model loaded.")
+        doc_embedding = model.encode(
+            combined_text
+        )
 
-    embedding = model.encode(query).tolist()
+        similarity = (
+            query_embedding @ doc_embedding
+        )
 
-    results = collection.query(
-        query_embeddings=[embedding],
-        n_results=top_k
+        scored.append(
+            (similarity, item)
+        )
+
+    scored.sort(
+        reverse=True,
+        key=lambda x: x[0]
     )
 
     recommendations = []
 
-    metadatas = results["metadatas"][0]
-    documents = results["documents"][0]
-
-    added = set()
-
-    for item, document in zip(
-        metadatas,
-        documents
-    ):
-
-        if item["name"] in added:
-            continue
-
-        added.add(item["name"])
-
-        test_type = infer_test_type(
-            item["name"],
-            document
-        )
+    for _, item in scored[:top_k]:
 
         recommendations.append({
             "name": item["name"],
             "url": item["url"],
-            "test_type": test_type
+            "test_type": infer_test_type(
+                item["name"],
+                item.get("description", "")
+            )
         })
 
     return recommendations[:10]
@@ -335,9 +347,7 @@ def generate_comparison(query):
             f"{first['name']} is categorized as "
             f"{first['test_type']} while "
             f"{second['name']} is categorized as "
-            f"{second['test_type']}. "
-            "Please review their SHL catalog pages "
-            "for detailed capability comparison."
+            f"{second['test_type']}."
         )
 
     else:
