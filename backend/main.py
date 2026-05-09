@@ -40,34 +40,48 @@ app.mount(
 
 
 # ---------------------------------------------------
-# GROQ CLIENT
+# GLOBAL VARIABLES
 # ---------------------------------------------------
 
-groq_client = Groq(
-    api_key=os.getenv("GROQ_API_KEY")
-)
-
-
-# ---------------------------------------------------
-# VECTOR DATABASE
-# ---------------------------------------------------
-
-client = chromadb.PersistentClient(
-    path="data/chroma_db"
-)
-
-collection = client.get_collection(
-    name="shl_assessments"
-)
+groq_client = None
+collection = None
+model = None
 
 
 # ---------------------------------------------------
-# EMBEDDING MODEL
+# STARTUP EVENT
 # ---------------------------------------------------
 
-model = SentenceTransformer(
-    "all-MiniLM-L6-v2"
-)
+@app.on_event("startup")
+def startup_event():
+
+    global groq_client
+    global collection
+    global model
+
+    print("Loading Groq client...")
+
+    groq_client = Groq(
+        api_key=os.getenv("GROQ_API_KEY")
+    )
+
+    print("Loading ChromaDB...")
+
+    client = chromadb.PersistentClient(
+        path="data/chroma_db"
+    )
+
+    collection = client.get_collection(
+        name="shl_assessments"
+    )
+
+    print("Loading embedding model...")
+
+    model = SentenceTransformer(
+        "all-MiniLM-L6-v2"
+    )
+
+    print("Startup completed.")
 
 
 # ---------------------------------------------------
@@ -167,26 +181,21 @@ def is_off_topic(text):
 
     blocked_keywords = [
 
-        # legal
         "legal",
         "lawsuit",
         "court",
 
-        # medical
         "medical",
         "doctor",
         "disease",
 
-        # politics
         "politics",
         "election",
 
-        # finance
         "bitcoin",
         "crypto",
         "stocks",
 
-        # entertainment
         "movie",
         "sports",
         "weather",
@@ -273,7 +282,6 @@ def retrieve_assessments(query, top_k=5):
     recommendations = []
 
     metadatas = results["metadatas"][0]
-
     documents = results["documents"][0]
 
     added = set()
