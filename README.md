@@ -67,8 +67,24 @@ The objective of this project is to create an intelligent conversational agent c
 
 ## Deployment
 
+### Live Production Deployment
+
+Main Application:
+
+https://shl-ai-recommender-production.up.railway.app/
+
+Health Endpoint:
+
+https://shl-ai-recommender-production.up.railway.app/health
+
+Chat Endpoint:
+
+https://shl-ai-recommender-production.up.railway.app/chat
+
+### Deployment Platforms
+
 - GitHub
-- Render
+- Railway
 
 ---
 
@@ -218,14 +234,14 @@ C:\shl-agent
 │   ├── prompt-injection.png
 │   ├── swagger-docs.png
 │   ├── health-endpoint.png
-│   └── render-deployment.png
+│   └── railway-deployment.png
 │
 ├── venv
 │
 ├── .env
 ├── .gitignore
 ├── requirements.txt
-├── render.yaml
+├── railway.json
 └── README.md
 ```
 
@@ -402,6 +418,12 @@ Local URL:
 http://127.0.0.1:8000/health
 ```
 
+Production URL:
+
+```text
+https://shl-ai-recommender-production.up.railway.app/health
+```
+
 Expected response:
 
 ```json
@@ -416,6 +438,12 @@ Expected response:
 
 ```http
 POST /chat
+```
+
+Production URL:
+
+```text
+https://shl-ai-recommender-production.up.railway.app/chat
 ```
 
 Example request:
@@ -575,7 +603,7 @@ chromadb==0.5.5
 sentence-transformers==3.0.1
 groq==0.11.0
 python-dotenv==1.0.1
-torch==2.4.1
+torch==2.1.0
 ```
 
 ---
@@ -600,26 +628,12 @@ data/chroma_db/
 
 ---
 
-# Render Deployment Configuration
+# Railway Deployment Configuration
 
-## File
+## Start Command
 
 ```text
-render.yaml
-```
-
-Contents:
-
-```yaml
-services:
-  - type: web
-    name: shl-ai-recommender
-    runtime: python
-    plan: free
-
-    buildCommand: pip install -r requirements.txt
-
-    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+uvicorn backend.main:app --host 0.0.0.0 --port $PORT
 ```
 
 ---
@@ -660,13 +674,13 @@ git push -u origin main
 
 ---
 
-# Render Deployment Steps
+# Railway Deployment Steps
 
 ## Step 1
 
-Create Render account:
+Create Railway account:
 
-https://render.com/
+https://railway.app/
 
 ---
 
@@ -678,13 +692,13 @@ Connect GitHub repository.
 
 ## Step 3
 
-Create new Web Service.
+Create new project.
 
 ---
 
 ## Step 4
 
-Select repository.
+Deploy from GitHub repository.
 
 ---
 
@@ -709,7 +723,7 @@ Deploy service.
 ## Health Endpoint
 
 ```text
-https://your-app.onrender.com/health
+https://shl-ai-recommender-production.up.railway.app/health
 ```
 
 Expected response:
@@ -826,6 +840,8 @@ Expected:
 ---
 
 # Author
+
+Anurag Shrivas
 
 SHL AI Assessment Recommender Project
 
