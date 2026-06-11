@@ -24,16 +24,7 @@ body {
     opacity: 0.5;
 }
 
-.shl-watermark {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 950px;
-    opacity: 0.85;
-    pointer-events: none;
-    z-index: 0;
-}
+
 
 .chat-container {
     position: relative;
@@ -51,14 +42,7 @@ body {
     flex-direction: column;
 }
 
-.shl-corner-logo {
-    position: absolute;
-    top: 20px;
-    right: 30px;
-    width: 180px;
-    height: auto;
-    z-index: 100;
-}
+
 
 .header {
     padding: 30px;
