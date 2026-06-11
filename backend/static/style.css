@@ -10,6 +10,7 @@ body {
     font-family: Arial, Helvetica, sans-serif;
     height: 100vh;
     overflow: hidden;
+    position: relative;
 }
 
 .background-glow {
@@ -23,18 +24,40 @@ body {
     opacity: 0.5;
 }
 
+.shl-watermark {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 950px;
+    opacity: 0.85;
+    pointer-events: none;
+    z-index: 0;
+}
+
 .chat-container {
+    position: relative;
+    z-index: 2;
     width: 92%;
     max-width: 1200px;
     height: 92vh;
     margin: 20px auto;
-    background: rgba(255,255,255,0.05);
+    background: rgba(255,255,255,0.04);
     border: 1px solid rgba(255,255,255,0.08);
     border-radius: 28px;
     backdrop-filter: blur(20px);
     overflow: hidden;
     display: flex;
     flex-direction: column;
+}
+
+.shl-corner-logo {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    width: 180px;
+    height: auto;
+    z-index: 100;
 }
 
 .header {
@@ -75,7 +98,6 @@ body {
         #4f46e5,
         #6366f1
     );
-
     margin-left: auto;
 }
 
@@ -116,7 +138,6 @@ button {
         #4f46e5,
         #6366f1
     );
-
     color: white;
     cursor: pointer;
     font-size: 16px;
@@ -180,10 +201,7 @@ button:hover {
 }
 
 @keyframes bounce {
-
-    0%,
-    80%,
-    100% {
+    0%, 80%, 100% {
         transform: scale(0.7);
         opacity: 0.5;
     }
@@ -195,7 +213,6 @@ button:hover {
 }
 
 @keyframes fadeIn {
-
     from {
         opacity: 0;
         transform: translateY(10px);
