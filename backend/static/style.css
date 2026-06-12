@@ -487,41 +487,8 @@ button:hover {
         margin: 10px auto;
     }
 
-    .header {
-        padding: 20px;
-    }
-
-    .header h1 {
-        font-size: 28px;
-        line-height: 1.2;
-    }
-
-    .header p {
-        font-size: 14px;
-    }
-
-    .chat-box {
-        padding: 20px;
-    }
-
-    .message {
-        max-width: 90%;
-        font-size: 14px;
-    }
-
-    .input-area {
-        padding: 15px;
-        gap: 10px;
-    }
-
-    input {
-        padding: 14px;
-        font-size: 14px;
-    }
-
-    button {
-        padding: 14px 18px;
-        font-size: 14px;
+    .shl-watermark {
+        display: none;
     }
 
     .shl-corner-logo {
@@ -530,14 +497,7 @@ button:hover {
         right: 10px;
     }
 
-
-    .chat-container {
-        width: 96%;
-        max-width: none;
-    }
-
     .recommendation-card h3 {
         font-size: 18px;
     }
-
 }
