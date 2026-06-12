@@ -24,7 +24,29 @@ body {
     opacity: 0.5;
 }
 
+/* SHL Corner Brand */
 
+.shl-corner-logo {
+    position: absolute;
+    top: 20px;
+    right: 25px;
+    width: 150px;
+    height: auto;
+    z-index: 9999;
+}
+
+/* SHL Background Brand */
+
+.shl-watermark {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 700px;
+    opacity: 1;
+    pointer-events: none;
+    z-index: 0;
+}
 
 .chat-container {
     position: relative;
